@@ -6,15 +6,25 @@ import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import { Product } from '@/context/CartContext';
 import { mockProducts } from '@/data/mockData';
+import { useWishlist } from '@/context/WishlistContext';
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   useEffect(() => {
     // Get 4 featured products
     const featured = mockProducts.slice(0, 4);
     setProducts(featured);
   }, []);
+
+  const handleWishlistToggle = (product: Product) => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
 
   return (
     <section className="py-16 md:py-24">
@@ -38,7 +48,12 @@ const FeaturedProducts = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard 
+              key={product.id} 
+              product={product} 
+              isWishlisted={isInWishlist(product.id)}
+              onWishlistToggle={() => handleWishlistToggle(product)}
+            />
           ))}
         </div>
       </div>
