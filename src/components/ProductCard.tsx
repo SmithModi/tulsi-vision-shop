@@ -5,16 +5,16 @@ import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/context/CartContext';
 import { useCart } from '@/context/CartContext';
-import { useWishlist } from '@/context/WishlistContext';
 
 type ProductCardProps = {
   product: Product;
+  isWishlisted?: boolean;
+  onWishlistToggle?: (product: Product) => void;
 };
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, isWishlisted = false, onWishlistToggle }: ProductCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,10 +26,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist(product);
+    if (onWishlistToggle) {
+      onWishlistToggle(product);
     }
   };
 
@@ -57,7 +55,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           >
             <Heart
               className={`w-4 h-4 ${
-                isInWishlist(product.id) ? 'fill-tulsi text-tulsi' : 'text-gray-600'
+                isWishlisted ? 'fill-tulsi text-tulsi' : 'text-gray-600'
               }`}
             />
           </button>
