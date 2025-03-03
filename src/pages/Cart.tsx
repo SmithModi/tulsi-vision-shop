@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '@/lib/utils';
+import { toast } from 'sonner';
+import jsPDF from 'jspdf';
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, totalItems, totalPrice, clearCart } = useCart();
@@ -16,6 +18,110 @@ const Cart = () => {
   const tax = subtotal * 0.05; // 5% tax
   const shipping = totalItems > 0 ? 999 : 0; // ₹999 shipping or free if cart is empty
   const grandTotal = subtotal + tax + shipping;
+
+  const generateReceipt = () => {
+    const doc = new jsPDF();
+    
+    // Set up the document
+    doc.setFontSize(20);
+    doc.text("Order Receipt", 105, 20, { align: "center" });
+    
+    // Add date
+    doc.setFontSize(10);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 30, { align: "center" });
+    
+    // Add company details
+    doc.setFontSize(12);
+    doc.text("Tulsi Ayurveda", 20, 40);
+    doc.setFontSize(10);
+    doc.text("123 Wellness Street, Ayurveda City", 20, 45);
+    doc.text("Email: contact@tulsiayurveda.com", 20, 50);
+    doc.text("Phone: +91 98765 43210", 20, 55);
+    
+    // Add a horizontal line
+    doc.line(20, 60, 190, 60);
+    
+    // Item table headers
+    doc.setFontSize(10);
+    doc.text("Item", 20, 70);
+    doc.text("Brand", 90, 70);
+    doc.text("Qty", 130, 70);
+    doc.text("Price", 150, 70);
+    doc.text("Total", 175, 70);
+    
+    // Add a horizontal line
+    doc.line(20, 73, 190, 73);
+    
+    // Item details
+    let y = 80;
+    items.forEach((item, index) => {
+      // Truncate name if too long
+      const displayName = item.product.name.length > 30 
+        ? item.product.name.substring(0, 30) + "..." 
+        : item.product.name;
+        
+      doc.text(displayName, 20, y);
+      doc.text(item.product.brand, 90, y);
+      doc.text(item.quantity.toString(), 130, y);
+      doc.text(formatPrice(item.product.price).replace("₹", ""), 150, y);
+      doc.text(formatPrice(item.product.price * item.quantity).replace("₹", ""), 175, y);
+      
+      y += 8;
+      
+      // Add page if needed
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+    
+    // Add a horizontal line
+    doc.line(20, y, 190, y);
+    y += 10;
+    
+    // Order summary
+    doc.text("Subtotal:", 140, y);
+    doc.text(formatPrice(subtotal).replace("₹", ""), 175, y);
+    y += 7;
+    
+    doc.text("Tax (5%):", 140, y);
+    doc.text(formatPrice(tax).replace("₹", ""), 175, y);
+    y += 7;
+    
+    doc.text("Shipping:", 140, y);
+    doc.text(shipping > 0 ? formatPrice(shipping).replace("₹", "") : "Free", 175, y);
+    y += 7;
+    
+    // Add a horizontal line
+    doc.line(140, y, 190, y);
+    y += 7;
+    
+    // Grand total
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    doc.text("Grand Total:", 140, y);
+    doc.text(formatPrice(grandTotal).replace("₹", ""), 175, y);
+    doc.setFont(undefined, 'normal');
+    
+    // Footer
+    y += 20;
+    doc.setFontSize(10);
+    doc.text("Thank you for shopping with Tulsi Ayurveda!", 105, y, { align: "center" });
+    
+    // Save the PDF with a name
+    doc.save("Tulsi_Ayurveda_Receipt.pdf");
+    
+    // Show success message
+    toast.success("Receipt downloaded successfully!");
+  };
+
+  const handleCheckout = () => {
+    generateReceipt();
+    // Here you would typically handle the actual checkout process
+    // For now, we'll just clear the cart after generating the receipt
+    clearCart();
+    toast.success("Order placed successfully!");
+  };
 
   if (items.length === 0) {
     return (
@@ -149,7 +255,10 @@ const Cart = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full mt-6 bg-tulsi hover:bg-tulsi/90">
+                <Button 
+                  className="w-full mt-6 bg-tulsi hover:bg-tulsi/90"
+                  onClick={handleCheckout}
+                >
                   Proceed to Checkout
                 </Button>
                 
