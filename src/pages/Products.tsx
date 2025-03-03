@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { mockProducts, brands, categories } from '@/data/mockData';
 import { Product } from '@/context/CartContext';
-import { Search, Filter, SlidersHorizontal } from 'lucide-react';
+import { Search, Filter, SlidersHorizontal, X } from 'lucide-react';
 import { 
   Accordion,
   AccordionContent,
@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
 import { useWishlist } from '@/context/WishlistContext';
+import { useToast } from '@/hooks/use-toast';
+import { useOnClickOutside } from '@/hooks/use-on-click-outside';
 
 // Define product colors and sizes for filtering
 const productColors = [
@@ -53,6 +55,12 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   
+  // Search suggestions state
+  const [searchSuggestions, setSearchSuggestions] = useState<Product[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  
   const initialBrand = searchParams.get('brand') || 'all';
   const initialCategory = searchParams.get('category') || 'all';
   const initialColor = searchParams.get('color') || 'all';
@@ -65,10 +73,33 @@ const Products = () => {
   
   const { wishlist, toggleWishlist } = useWishlist();
 
+  // Close suggestions when clicking outside
+  useOnClickOutside(searchRef, () => setShowSuggestions(false));
+
   useEffect(() => {
     // Initialize with mock products
     setProducts(mockProducts);
   }, []);
+
+  useEffect(() => {
+    // Generate search suggestions
+    if (searchQuery.length >= 2) {
+      const query = searchQuery.toLowerCase();
+      const suggestions = products
+        .filter(product => 
+          product.name.toLowerCase().includes(query) || 
+          product.brand.toLowerCase().includes(query) ||
+          product.description.toLowerCase().includes(query)
+        )
+        .slice(0, 5); // Limit suggestions to 5 items
+      
+      setSearchSuggestions(suggestions);
+      setShowSuggestions(true);
+    } else {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, products]);
 
   useEffect(() => {
     // Filter products based on selected filters and search query
@@ -150,6 +181,20 @@ const Products = () => {
     setSearchQuery(e.target.value);
   };
 
+  const handleSuggestionClick = (product: Product) => {
+    setSearchQuery(product.name);
+    setShowSuggestions(false);
+    toast({
+      title: "Product found",
+      description: `Showing results for ${product.name}`,
+    });
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setShowSuggestions(false);
+  };
+
   const clearFilters = () => {
     setSelectedBrand('all');
     setSelectedCategory('all');
@@ -196,14 +241,45 @@ const Products = () => {
                   Filters
                 </Button>
                 
-                <div className="relative">
+                <div className="relative" ref={searchRef}>
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={handleSearchChange}
-                    className="pl-10 w-[200px]"
+                    className="pl-10 pr-10 w-[200px]"
                   />
+                  {searchQuery && (
+                    <button 
+                      onClick={clearSearch}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                  
+                  {/* Mobile search suggestions */}
+                  {showSuggestions && searchSuggestions.length > 0 && (
+                    <div className="absolute z-10 mt-1 w-full bg-white dark:bg-zinc-800 rounded-md shadow-lg max-h-60 overflow-auto">
+                      {searchSuggestions.map((product) => (
+                        <div 
+                          key={product.id}
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-700 cursor-pointer"
+                          onClick={() => handleSuggestionClick(product)}
+                        >
+                          <p className="font-medium text-sm">{product.name}</p>
+                          <p className="text-xs text-muted-foreground">{product.brand}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* No results message for mobile */}
+                  {showSuggestions && searchQuery.length >= 2 && searchSuggestions.length === 0 && (
+                    <div className="absolute z-10 mt-1 w-full bg-white dark:bg-zinc-800 rounded-md shadow-lg p-3">
+                      <p className="text-sm text-muted-foreground">No products match your search</p>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -319,14 +395,57 @@ const Products = () => {
               <div className="w-full lg:w-3/4 xl:w-4/5">
                 {/* Desktop Search and Sort Bar */}
                 <div className="hidden lg:flex items-center justify-between mb-8">
-                  <div className="relative">
+                  <div className="relative" ref={searchRef}>
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
                       placeholder="Search products..."
                       value={searchQuery}
                       onChange={handleSearchChange}
-                      className="pl-10 w-[300px]"
+                      className="pl-10 pr-10 w-[300px]"
                     />
+                    {searchQuery && (
+                      <button 
+                        onClick={clearSearch}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                    
+                    {/* Desktop search suggestions */}
+                    {showSuggestions && searchSuggestions.length > 0 && (
+                      <div className="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-800 rounded-md shadow-lg max-h-80 overflow-auto">
+                        {searchSuggestions.map((product) => (
+                          <div 
+                            key={product.id}
+                            className="p-3 hover:bg-gray-100 dark:hover:bg-zinc-700 cursor-pointer flex items-start gap-3"
+                            onClick={() => handleSuggestionClick(product)}
+                          >
+                            <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
+                              <img 
+                                src={product.image} 
+                                alt={product.name} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div>
+                              <p className="font-medium">{product.name}</p>
+                              <p className="text-sm text-muted-foreground">{product.brand}</p>
+                              <p className="text-sm font-medium text-tulsi">
+                                ₹{(product.price / 100).toLocaleString('en-IN')}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* No results message for desktop */}
+                    {showSuggestions && searchQuery.length >= 2 && searchSuggestions.length === 0 && (
+                      <div className="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-800 rounded-md shadow-lg p-4">
+                        <p className="text-muted-foreground">No products match your search</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-3">
