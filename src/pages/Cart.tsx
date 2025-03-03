@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -20,107 +19,127 @@ const Cart = () => {
   const grandTotal = subtotal + tax + shipping;
 
   const generateReceipt = () => {
-    const doc = new jsPDF();
-    
-    // Set up the document
-    doc.setFontSize(20);
-    doc.text("Order Receipt", 105, 20, { align: "center" });
-    
-    // Add date
-    doc.setFontSize(10);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 30, { align: "center" });
-    
-    // Add company details
-    doc.setFontSize(12);
-    doc.text("Tulsi Ayurveda", 20, 40);
-    doc.setFontSize(10);
-    doc.text("123 Wellness Street, Ayurveda City", 20, 45);
-    doc.text("Email: contact@tulsiayurveda.com", 20, 50);
-    doc.text("Phone: +91 98765 43210", 20, 55);
-    
-    // Add a horizontal line
-    doc.line(20, 60, 190, 60);
-    
-    // Item table headers
-    doc.setFontSize(10);
-    doc.text("Item", 20, 70);
-    doc.text("Brand", 90, 70);
-    doc.text("Qty", 130, 70);
-    doc.text("Price", 150, 70);
-    doc.text("Total", 175, 70);
-    
-    // Add a horizontal line
-    doc.line(20, 73, 190, 73);
-    
-    // Item details
-    let y = 80;
-    items.forEach((item, index) => {
-      // Truncate name if too long
-      const displayName = item.product.name.length > 30 
-        ? item.product.name.substring(0, 30) + "..." 
-        : item.product.name;
+    try {
+      const doc = new jsPDF();
+      
+      // Set up the document
+      doc.setFontSize(20);
+      doc.text("Order Receipt", 105, 20, { align: "center" });
+      
+      // Add date
+      doc.setFontSize(10);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 30, { align: "center" });
+      
+      // Add company details
+      doc.setFontSize(12);
+      doc.text("Tulsi Ayurveda", 20, 40);
+      doc.setFontSize(10);
+      doc.text("123 Wellness Street, Ayurveda City", 20, 45);
+      doc.text("Email: contact@tulsiayurveda.com", 20, 50);
+      doc.text("Phone: +91 98765 43210", 20, 55);
+      
+      // Add a horizontal line
+      doc.line(20, 60, 190, 60);
+      
+      // Item table headers
+      doc.setFontSize(10);
+      doc.text("Item", 20, 70);
+      doc.text("Brand", 90, 70);
+      doc.text("Qty", 130, 70);
+      doc.text("Price", 150, 70);
+      doc.text("Total", 175, 70);
+      
+      // Add a horizontal line
+      doc.line(20, 73, 190, 73);
+      
+      // Item details
+      let y = 80;
+      items.forEach((item) => {
+        // Truncate name if too long
+        const displayName = item.product.name.length > 30 
+          ? item.product.name.substring(0, 30) + "..." 
+          : item.product.name;
+          
+        doc.text(displayName, 20, y);
+        doc.text(item.product.brand, 90, y);
+        doc.text(item.quantity.toString(), 130, y);
+        doc.text(formatPrice(item.product.price).replace("₹", ""), 150, y);
+        doc.text(formatPrice(item.product.price * item.quantity).replace("₹", ""), 175, y);
         
-      doc.text(displayName, 20, y);
-      doc.text(item.product.brand, 90, y);
-      doc.text(item.quantity.toString(), 130, y);
-      doc.text(formatPrice(item.product.price).replace("₹", ""), 150, y);
-      doc.text(formatPrice(item.product.price * item.quantity).replace("₹", ""), 175, y);
+        y += 8;
+        
+        // Add page if needed
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      });
       
-      y += 8;
+      // Add a horizontal line
+      doc.line(20, y, 190, y);
+      y += 10;
       
-      // Add page if needed
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
-      }
-    });
-    
-    // Add a horizontal line
-    doc.line(20, y, 190, y);
-    y += 10;
-    
-    // Order summary
-    doc.text("Subtotal:", 140, y);
-    doc.text(formatPrice(subtotal).replace("₹", ""), 175, y);
-    y += 7;
-    
-    doc.text("Tax (5%):", 140, y);
-    doc.text(formatPrice(tax).replace("₹", ""), 175, y);
-    y += 7;
-    
-    doc.text("Shipping:", 140, y);
-    doc.text(shipping > 0 ? formatPrice(shipping).replace("₹", "") : "Free", 175, y);
-    y += 7;
-    
-    // Add a horizontal line
-    doc.line(140, y, 190, y);
-    y += 7;
-    
-    // Grand total
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-    doc.text("Grand Total:", 140, y);
-    doc.text(formatPrice(grandTotal).replace("₹", ""), 175, y);
-    doc.setFont(undefined, 'normal');
-    
-    // Footer
-    y += 20;
-    doc.setFontSize(10);
-    doc.text("Thank you for shopping with Tulsi Ayurveda!", 105, y, { align: "center" });
-    
-    // Save the PDF with a name
-    doc.save("Tulsi_Ayurveda_Receipt.pdf");
-    
-    // Show success message
-    toast.success("Receipt downloaded successfully!");
+      // Order summary
+      doc.text("Subtotal:", 140, y);
+      doc.text(formatPrice(subtotal).replace("₹", ""), 175, y);
+      y += 7;
+      
+      doc.text("Tax (5%):", 140, y);
+      doc.text(formatPrice(tax).replace("₹", ""), 175, y);
+      y += 7;
+      
+      doc.text("Shipping:", 140, y);
+      doc.text(shipping > 0 ? formatPrice(shipping).replace("₹", "") : "Free", 175, y);
+      y += 7;
+      
+      // Add a horizontal line
+      doc.line(140, y, 190, y);
+      y += 7;
+      
+      // Grand total
+      doc.setFontSize(12);
+      doc.setFont("helvetica", 'bold');
+      doc.text("Grand Total:", 140, y);
+      doc.text(formatPrice(grandTotal).replace("₹", ""), 175, y);
+      doc.setFont("helvetica", 'normal');
+      
+      // Footer
+      y += 20;
+      doc.setFontSize(10);
+      doc.text("Thank you for shopping with Tulsi Ayurveda!", 105, y, { align: "center" });
+      
+      // Force download the PDF
+      const pdfBlob = doc.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      
+      // Create a link element and simulate a click to trigger download
+      const downloadLink = document.createElement('a');
+      downloadLink.href = pdfUrl;
+      downloadLink.download = "Tulsi_Ayurveda_Receipt.pdf";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      
+      // Clean up the URL object
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 100);
+      
+      // Show success message
+      toast.success("Receipt downloaded successfully!");
+      return true;
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      toast.error("Failed to generate receipt. Please try again.");
+      return false;
+    }
   };
 
   const handleCheckout = () => {
-    generateReceipt();
-    // Here you would typically handle the actual checkout process
-    // For now, we'll just clear the cart after generating the receipt
-    clearCart();
-    toast.success("Order placed successfully!");
+    const receiptGenerated = generateReceipt();
+    if (receiptGenerated) {
+      // Only clear cart if receipt was successfully generated
+      clearCart();
+      toast.success("Order placed successfully!");
+    }
   };
 
   if (items.length === 0) {
