@@ -90,16 +90,22 @@ const Products = () => {
     
     // Filter by color (simulated with random selection since we don't have actual color data)
     if (selectedColor !== 'all') {
-      filtered = filtered.filter(
-        product => product.id % productColors.length === productColors.findIndex(c => c.value === selectedColor)
-      );
+      // Fix the type error by ensuring numeric comparison
+      filtered = filtered.filter(product => {
+        const productId = parseInt(product.id, 10);
+        const colorIndex = productColors.findIndex(c => c.value === selectedColor);
+        return productId % productColors.length === colorIndex;
+      });
     }
     
     // Filter by size (simulated with random selection since we don't have actual size data)
     if (selectedSize !== 'all') {
-      filtered = filtered.filter(
-        product => product.id % productSizes.length === productSizes.findIndex(s => s.value === selectedSize)
-      );
+      // Fix the type error by ensuring numeric comparison
+      filtered = filtered.filter(product => {
+        const productId = parseInt(product.id, 10);
+        const sizeIndex = productSizes.findIndex(s => s.value === selectedSize);
+        return productId % productSizes.length === sizeIndex;
+      });
     }
     
     // Filter by search query

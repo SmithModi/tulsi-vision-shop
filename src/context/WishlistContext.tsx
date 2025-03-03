@@ -9,6 +9,9 @@ type WishlistContextType = {
   removeFromWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
   clearWishlist: () => void;
+  // Added these properties that were missing
+  wishlist: Product[];
+  toggleWishlist: (product: Product) => void;
 };
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
@@ -58,13 +61,25 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
     toast.success('Wishlist cleared');
   };
 
+  // Added toggle function that was missing
+  const toggleWishlist = (product: Product) => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
   return (
     <WishlistContext.Provider value={{
       items,
       addToWishlist,
       removeFromWishlist,
       isInWishlist,
-      clearWishlist
+      clearWishlist,
+      // Added these properties to match the type
+      wishlist: items,
+      toggleWishlist
     }}>
       {children}
     </WishlistContext.Provider>
