@@ -1,6 +1,10 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { toast } from 'sonner';
+import { signIn as apiSignIn, signUp as apiSignUp, signOut as apiSignOut, mockSignIn, mockSignUp } from '@/api/auth';
+
+// Use environment variable to determine if we should use mock APIs
+const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === 'true' || true;
 
 type User = {
   id: string;
@@ -22,31 +26,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate loading user from local storage
+  // Load user from local storage on initial render
   useEffect(() => {
     const storedUser = localStorage.getItem('tulsi-user');
-    if (storedUser) {
+    const token = localStorage.getItem('tulsi-token');
+    
+    if (storedUser && token) {
       setUser(JSON.parse(storedUser));
     }
     setIsLoading(false);
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    // Simulate API call
     setIsLoading(true);
     try {
-      // For demo purposes, accept any credentials
-      const mockUser = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-      };
+      const response = USE_MOCK_API 
+        ? await mockSignIn(email, password)
+        : await apiSignIn({ email, password });
       
-      setUser(mockUser);
-      localStorage.setItem('tulsi-user', JSON.stringify(mockUser));
+      setUser(response.user);
+      localStorage.setItem('tulsi-user', JSON.stringify(response.user));
+      localStorage.setItem('tulsi-token', response.token);
       toast.success('Signed in successfully');
     } catch (error) {
-      toast.error('Failed to sign in');
+      toast.error(error instanceof Error ? error.message : 'Failed to sign in');
       throw error;
     } finally {
       setIsLoading(false);
@@ -54,21 +57,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUp = async (name: string, email: string, password: string) => {
-    // Simulate API call
     setIsLoading(true);
     try {
-      // For demo purposes, accept any credentials
-      const mockUser = {
-        id: Date.now().toString(),
-        email,
-        name,
-      };
+      const response = USE_MOCK_API
+        ? await mockSignUp(name, email, password)
+        : await apiSignUp({ name, email, password });
       
-      setUser(mockUser);
-      localStorage.setItem('tulsi-user', JSON.stringify(mockUser));
+      setUser(response.user);
+      localStorage.setItem('tulsi-user', JSON.stringify(response.user));
+      localStorage.setItem('tulsi-token', response.token);
       toast.success('Account created successfully');
     } catch (error) {
-      toast.error('Failed to create account');
+      toast.error(error instanceof Error ? error.message : 'Failed to create account');
       throw error;
     } finally {
       setIsLoading(false);
@@ -76,8 +76,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = () => {
+    if (!USE_MOCK_API) {
+      apiSignOut().catch(error => {
+        console.error('Error during sign out:', error);
+      });
+    }
+    
     setUser(null);
     localStorage.removeItem('tulsi-user');
+    localStorage.removeItem('tulsi-token');
     toast.success('Signed out successfully');
   };
 
