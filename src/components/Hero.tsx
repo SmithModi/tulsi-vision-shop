@@ -36,7 +36,7 @@ const Hero = () => {
               <div className="relative w-full h-full">
                 {/* Main Image */}
                 <img
-                  src="https://images.unsplash.com/photo-1625591338027-00c01a3e3335?auto=format&fit=crop&q=80&w=1974"
+                  src="https://images.unsplash.com/photo-1590064661010-1a47f5e9c6c6?auto=format&fit=crop&q=80&w=1974"
                   alt="Premium eyewear"
                   className="absolute z-10 w-[85%] h-[85%] object-cover rounded-2xl shadow-xl"
                   style={{ 

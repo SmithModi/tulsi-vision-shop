@@ -78,7 +78,7 @@ const Index = () => {
                 </div>
                 <div className="w-full md:w-1/3 h-64 relative">
                   <img
-                    src="https://images.unsplash.com/photo-1584036553516-bf83210aa16c?auto=format&fit=crop&q=80&w=1974"
+                    src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&q=80&w=1974"
                     alt="Premium eyewear collection"
                     className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-lg"
                   />

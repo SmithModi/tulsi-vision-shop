@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -19,15 +19,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlistToggle
 }) => {
   const { addToCart } = useCart();
+  const [imageError, setImageError] = useState(false);
+  
+  // Fallback image in case the primary image fails to load
+  const fallbackImage = "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&q=80&w=2000";
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md">
       <Link to={`/product/${product.id}`} className="block">
         <div className="relative aspect-square overflow-hidden">
           <img 
-            src={product.image} 
+            src={imageError ? fallbackImage : product.image} 
             alt={product.name} 
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            onError={() => setImageError(true)}
           />
           <button 
             onClick={(e) => {
