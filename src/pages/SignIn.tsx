@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { toast } from "sonner";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -20,8 +21,21 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
-      await signIn(email, password);
-      navigate("/");
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        navigate("/");
+      } else if (result.error?.code === 'user_not_found') {
+        // Redirect to signup if the user doesn't exist
+        toast.info("Account not found. Redirecting to sign up page...");
+        
+        // Short delay to allow the toast to be seen
+        setTimeout(() => {
+          navigate("/signup", { 
+            state: { email: email } // Pass the email to pre-fill in signup form
+          });
+        }, 1500);
+      }
     } catch (error) {
       console.error("Sign in error:", error);
     } finally {

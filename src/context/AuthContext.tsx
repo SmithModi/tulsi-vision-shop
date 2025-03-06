@@ -1,7 +1,14 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { toast } from 'sonner';
-import { signIn as apiSignIn, signUp as apiSignUp, signOut as apiSignOut, mockSignIn, mockSignUp } from '@/api/auth';
+import { 
+  signIn as apiSignIn, 
+  signUp as apiSignUp, 
+  signOut as apiSignOut, 
+  mockSignIn, 
+  mockSignUp, 
+  AuthError 
+} from '@/api/auth';
 
 // Use environment variable to determine if we should use mock APIs
 const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === 'true' || true;
@@ -15,8 +22,8 @@ type User = {
 type AuthContextType = {
   user: User;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (name: string, email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: AuthError }>;
+  signUp: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: AuthError }>;
   signOut: () => void;
 };
 
@@ -48,9 +55,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem('tulsi-user', JSON.stringify(response.user));
       localStorage.setItem('tulsi-token', response.token);
       toast.success('Signed in successfully');
+      return { success: true };
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to sign in');
-      throw error;
+      const authError = error as AuthError;
+      toast.error(authError.message || 'Failed to sign in');
+      return { 
+        success: false, 
+        error: authError
+      };
     } finally {
       setIsLoading(false);
     }
@@ -67,9 +79,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem('tulsi-user', JSON.stringify(response.user));
       localStorage.setItem('tulsi-token', response.token);
       toast.success('Account created successfully');
+      return { success: true };
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create account');
-      throw error;
+      const authError = error as AuthError;
+      toast.error(authError.message || 'Failed to create account');
+      return { 
+        success: false, 
+        error: authError
+      };
     } finally {
       setIsLoading(false);
     }

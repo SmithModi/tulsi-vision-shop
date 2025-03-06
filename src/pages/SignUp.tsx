@@ -1,12 +1,16 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+interface LocationState {
+  email?: string;
+}
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -17,6 +21,15 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if we have an email from redirect
+  useEffect(() => {
+    const state = location.state as LocationState;
+    if (state?.email) {
+      setEmail(state.email);
+    }
+  }, [location.state]);
 
   const validatePassword = () => {
     if (password !== confirmPassword) {
@@ -41,8 +54,10 @@ const SignUp = () => {
     setIsSubmitting(true);
 
     try {
-      await signUp(name, email, password);
-      navigate("/");
+      const result = await signUp(name, email, password);
+      if (result.success) {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Sign up error:", error);
     } finally {
