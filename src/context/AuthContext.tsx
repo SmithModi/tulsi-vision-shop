@@ -39,7 +39,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem('tulsi-token');
     
     if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        // If JSON parsing fails, clear the localStorage
+        localStorage.removeItem('tulsi-user');
+        localStorage.removeItem('tulsi-token');
+        console.error('Failed to parse stored user:', e);
+      }
     }
     setIsLoading(false);
   }, []);
@@ -47,9 +54,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      console.log('Attempting sign in with:', { email, password });
+      
       const response = USE_MOCK_API 
         ? await mockSignIn(email, password)
         : await apiSignIn({ email, password });
+      
+      console.log('Sign in successful:', response);
       
       setUser(response.user);
       localStorage.setItem('tulsi-user', JSON.stringify(response.user));
@@ -57,6 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       toast.success('Signed in successfully');
       return { success: true };
     } catch (error) {
+      console.error('Sign in error:', error);
       const authError = error as AuthError;
       toast.error(authError.message || 'Failed to sign in');
       return { 
@@ -71,9 +83,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signUp = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
+      console.log('Attempting sign up with:', { name, email });
+      
       const response = USE_MOCK_API
         ? await mockSignUp(name, email, password)
         : await apiSignUp({ name, email, password });
+      
+      console.log('Sign up successful:', response);
       
       setUser(response.user);
       localStorage.setItem('tulsi-user', JSON.stringify(response.user));
@@ -81,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       toast.success('Account created successfully');
       return { success: true };
     } catch (error) {
+      console.error('Sign up error:', error);
       const authError = error as AuthError;
       toast.error(authError.message || 'Failed to create account');
       return { 
@@ -93,6 +110,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = () => {
+    console.log('Signing out user:', user?.email);
+    
     if (!USE_MOCK_API) {
       apiSignOut().catch(error => {
         console.error('Error during sign out:', error);

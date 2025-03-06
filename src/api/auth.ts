@@ -70,13 +70,14 @@ export const signOut = async (): Promise<void> => {
 
 // For development/testing purposes, provide mock implementations
 export const mockSignIn = (email: string, password: string): Promise<AuthResponse> => {
-  // Simulate a local "database" of users for testing
-  const mockUsers = [
+  // Get stored users from localStorage to allow persistent mock data
+  const storedUsers = localStorage.getItem('tulsi-mock-users');
+  const mockUsers = storedUsers ? JSON.parse(storedUsers) : [
     { id: '1', email: 'user@example.com', name: 'Test User', password: 'password123' },
     { id: '2', email: 'admin@example.com', name: 'Admin User', password: 'admin123' }
   ];
-
-  const user = mockUsers.find(u => u.email === email);
+  
+  const user = mockUsers.find((u: any) => u.email === email);
   
   if (!user) {
     return Promise.reject({ message: 'User not found', code: 'user_not_found' });
@@ -97,19 +98,33 @@ export const mockSignIn = (email: string, password: string): Promise<AuthRespons
 };
 
 export const mockSignUp = (name: string, email: string, password: string): Promise<AuthResponse> => {
-  // Check if email already exists in our mock users
-  const mockUsers = [
+  // Get stored users from localStorage to allow persistent mock data
+  const storedUsers = localStorage.getItem('tulsi-mock-users');
+  let mockUsers = storedUsers ? JSON.parse(storedUsers) : [
     { id: '1', email: 'user@example.com', name: 'Test User', password: 'password123' },
     { id: '2', email: 'admin@example.com', name: 'Admin User', password: 'admin123' }
   ];
   
-  if (mockUsers.some(u => u.email === email)) {
+  if (mockUsers.some((u: any) => u.email === email)) {
     return Promise.reject({ message: 'Email already in use', code: 'email_exists' });
   }
   
+  // Create a new user and add it to our mock database
+  const newUser = {
+    id: Date.now().toString(),
+    email,
+    name,
+    password
+  };
+  
+  mockUsers.push(newUser);
+  
+  // Store updated users in localStorage
+  localStorage.setItem('tulsi-mock-users', JSON.stringify(mockUsers));
+  
   return Promise.resolve({
     user: {
-      id: Date.now().toString(),
+      id: newUser.id,
       email,
       name,
     },

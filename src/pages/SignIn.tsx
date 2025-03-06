@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,14 +13,39 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signIn } = useAuth();
+  const [errorMessage, setErrorMessage] = useState("");
+  const { signIn, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // If user is already logged in, redirect to home
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  // Check if we have an email from redirect
+  useEffect(() => {
+    const state = location.state as { email?: string };
+    if (state?.email) {
+      setEmail(state.email);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage("");
+
+    if (!email || !password) {
+      setErrorMessage("Email and password are required");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
+      console.log("Attempting to sign in with:", email);
       const result = await signIn(email, password);
       
       if (result.success) {
@@ -35,9 +60,14 @@ const SignIn = () => {
             state: { email: email } // Pass the email to pre-fill in signup form
           });
         }, 1500);
+      } else if (result.error?.code === 'invalid_credentials') {
+        setErrorMessage("Invalid password. Please try again.");
+      } else {
+        setErrorMessage(result.error?.message || "Failed to sign in");
       }
     } catch (error) {
       console.error("Sign in error:", error);
+      setErrorMessage("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -96,6 +126,12 @@ const SignIn = () => {
                   disabled={isSubmitting}
                 />
               </div>
+
+              {errorMessage && (
+                <div className="rounded-md bg-red-50 p-2 text-sm text-red-600">
+                  {errorMessage}
+                </div>
+              )}
             </div>
 
             <Button

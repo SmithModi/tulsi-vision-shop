@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { toast } from "sonner";
 
 interface LocationState {
   email?: string;
@@ -19,9 +20,16 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // If user is already logged in, redirect to home
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   // Check if we have an email from redirect
   useEffect(() => {
@@ -54,12 +62,18 @@ const SignUp = () => {
     setIsSubmitting(true);
 
     try {
+      console.log("Attempting to sign up with:", email);
       const result = await signUp(name, email, password);
+      
       if (result.success) {
-        navigate("/");
+        toast.success("Account created successfully! Redirecting...");
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       }
     } catch (error) {
       console.error("Sign up error:", error);
+      toast.error("Failed to create account");
     } finally {
       setIsSubmitting(false);
     }
