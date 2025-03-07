@@ -1,4 +1,3 @@
-
 import { Product } from '@/context/CartContext';
 
 export const mockProducts: Product[] = [
@@ -24,7 +23,7 @@ export const mockProducts: Product[] = [
     id: '3',
     name: 'Persol 649 Series Sunglasses',
     price: 22999,
-    image: 'https://images.unsplash.com/photo-1625591341337-13402c773e01?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=2000',
     category: 'sunglasses',
     brand: 'Persol',
     description: 'The iconic Persol 649 series, worn by legends of cinema. These handcrafted sunglasses feature crystal lenses, supreme comfort with the patented Meflecto temples, and the distinctive Supreme Arrow metal hinges.'
@@ -42,7 +41,7 @@ export const mockProducts: Product[] = [
     id: '5',
     name: 'Montblanc MB0724S Sunglasses',
     price: 41999,
-    image: 'https://images.unsplash.com/photo-1612729675540-fe5f8f64e326?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=2000',
     category: 'sunglasses',
     brand: 'Montblanc',
     description: 'Luxurious aviator-style sunglasses featuring premium acetate frames and stainless steel temples with the Montblanc emblem. These sophisticated sunglasses offer full UV protection while expressing timeless elegance.'
@@ -51,7 +50,7 @@ export const mockProducts: Product[] = [
     id: '6',
     name: 'Oliver Peoples Gregory Peck',
     price: 31999,
-    image: 'https://images.unsplash.com/photo-1615468822882-4828d2602857?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1577744168855-5a36dd0273b2?auto=format&fit=crop&q=80&w=2000',
     category: 'optical',
     brand: 'Oliver Peoples',
     description: 'Inspired by the glasses worn by Gregory Peck as Atticus Finch in the film "To Kill a Mockingbird". These round frames are made from premium acetate and feature distinctive details like the Oliver Peoples logo on the temples.'
@@ -60,7 +59,7 @@ export const mockProducts: Product[] = [
     id: '7',
     name: 'Tom Ford FT5634-B Blue Filter',
     price: 37999,
-    image: 'https://images.unsplash.com/photo-1582142407894-ec8ceae8cd88?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=2000',
     category: 'optical',
     brand: 'Tom Ford',
     description: 'Sophisticated rectangular frames from Tom Ford featuring blue light filtering lenses to protect eyes from digital strain. The signature "T" metal decoration on temples adds a touch of luxury to these elegant frames.'
@@ -69,7 +68,7 @@ export const mockProducts: Product[] = [
     id: '8',
     name: 'Prada PR 17WS Ultravox',
     price: 29999,
-    image: 'https://images.unsplash.com/photo-1625591341546-38d9ea1dce6d?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1577744168855-5a36dd0273b2?auto=format&fit=crop&q=80&w=2000',
     category: 'sunglasses',
     brand: 'Prada',
     description: 'These bold cat-eye sunglasses from Prada\'s Ultravox collection make a fashion statement with their unique angular silhouette. Features gradient lenses and the recognizable Prada logo on the temples.'
@@ -87,7 +86,7 @@ export const mockProducts: Product[] = [
     id: '10',
     name: 'Montblanc MB0042O Smart Reading',
     price: 39999,
-    image: 'https://images.unsplash.com/photo-1633620135408-6466f078a47b?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=2000',
     category: 'optical',
     brand: 'Montblanc',
     description: 'Revolutionary reading glasses with progressive smart lenses that adjust based on viewing distance. The elegant frame design features Montblanc\'s signature details and craftsmanship for both style and functionality.'
@@ -96,7 +95,7 @@ export const mockProducts: Product[] = [
     id: '11',
     name: 'Dior BlackSuit Optical',
     price: 42999,
-    image: 'https://images.unsplash.com/photo-1599838082471-edc942494d55?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1577744168855-5a36dd0273b2?auto=format&fit=crop&q=80&w=2000',
     category: 'optical',
     brand: 'Dior',
     description: 'Modern rectangular frames from Dior\'s BlackSuit collection with clean lines and minimalist design. These lightweight frames feature Dior\'s CD logo detail on the temples for a subtle yet recognizable brand signature.'
@@ -105,7 +104,7 @@ export const mockProducts: Product[] = [
     id: '12',
     name: 'Cartier Santos de Cartier',
     price: 56999,
-    image: 'https://images.unsplash.com/photo-1633677560477-b14a5e0a51d0?auto=format&fit=crop&q=80&w=2000',
+    image: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=2000',
     category: 'optical',
     brand: 'Cartier',
     description: 'Luxurious aviator-style optical frames with Cartier\'s signature screw details inspired by the iconic Santos watch. Crafted from premium materials including titanium and gold-finish accents for enduring elegance.'

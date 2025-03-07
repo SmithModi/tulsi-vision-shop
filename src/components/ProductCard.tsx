@@ -21,8 +21,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const { addToCart } = useCart();
   const [imageError, setImageError] = useState(false);
   
-  // Fallback image in case the primary image fails to load
-  const fallbackImage = "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&q=80&w=2000";
+  // Improved fallback image for elegant optical glasses
+  const fallbackImage = "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=2000";
 
   const handleImageError = () => {
     console.log(`Image failed to load for product: ${product.id} - ${product.name}`);
