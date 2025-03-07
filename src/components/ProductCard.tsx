@@ -34,6 +34,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
     addToCart(product);
   };
 
+  const handleWishlistToggle = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation(); // Stop event bubbling
+    onWishlistToggle(product);
+  };
+
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md">
       <Link to={`/product/${product.id}`} className="block">
@@ -45,10 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             onError={handleImageError}
           />
           <button 
-            onClick={(e) => {
-              e.preventDefault(); // Prevent navigation
-              onWishlistToggle(product);
-            }}
+            onClick={(e) => handleWishlistToggle(e, product)}
             className="absolute top-3 right-3 bg-white dark:bg-zinc-800 p-2 rounded-full shadow-sm hover:scale-110 transition-all duration-300"
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
