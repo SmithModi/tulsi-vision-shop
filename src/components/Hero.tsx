@@ -38,10 +38,10 @@ const Hero = () => {
           <div className="relative h-[400px] md:h-[500px] animate-fade-in">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full h-full">
-                {/* Main Image */}
+                {/* Main Image - Updated to an elegant optical-themed image */}
                 <img
-                  src={imageError ? fallbackImage : "https://images.unsplash.com/photo-1590064661010-1a47f5e9c6c6?auto=format&fit=crop&q=80&w=1974"}
-                  alt="Premium eyewear"
+                  src={imageError ? fallbackImage : "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&q=80&w=2000"}
+                  alt="Elegant eyewear collection"
                   className="absolute z-10 w-[85%] h-[85%] object-cover rounded-2xl shadow-xl"
                   style={{ 
                     left: '50%', 
