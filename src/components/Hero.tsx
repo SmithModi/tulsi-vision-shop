@@ -2,8 +2,12 @@
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 const Hero = () => {
+  const [imageError, setImageError] = useState(false);
+  const fallbackImage = "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&q=80&w=2000";
+  
   return (
     <div className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 hero-gradient">
       <div className="container mx-auto px-4">
@@ -36,7 +40,7 @@ const Hero = () => {
               <div className="relative w-full h-full">
                 {/* Main Image */}
                 <img
-                  src="https://images.unsplash.com/photo-1590064661010-1a47f5e9c6c6?auto=format&fit=crop&q=80&w=1974"
+                  src={imageError ? fallbackImage : "https://images.unsplash.com/photo-1590064661010-1a47f5e9c6c6?auto=format&fit=crop&q=80&w=1974"}
                   alt="Premium eyewear"
                   className="absolute z-10 w-[85%] h-[85%] object-cover rounded-2xl shadow-xl"
                   style={{ 
@@ -44,6 +48,7 @@ const Hero = () => {
                     top: '50%', 
                     transform: 'translate(-50%, -50%)' 
                   }}
+                  onError={() => setImageError(true)}
                 />
                 
                 {/* Decorative Elements */}

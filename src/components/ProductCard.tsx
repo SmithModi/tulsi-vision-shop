@@ -22,7 +22,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [imageError, setImageError] = useState(false);
   
   // Fallback image in case the primary image fails to load
-  const fallbackImage = "https://images.unsplash.com/photo-1577803645773-f96470509666?auto=format&fit=crop&q=80&w=2000";
+  const fallbackImage = "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&q=80&w=2000";
+
+  const handleImageError = () => {
+    console.log(`Image failed to load for product: ${product.id} - ${product.name}`);
+    setImageError(true);
+  };
+
+  const handleAddToCart = () => {
+    console.log(`Adding to cart: ${product.id} - ${product.name}`);
+    addToCart(product);
+  };
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md">
@@ -32,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={imageError ? fallbackImage : product.image} 
             alt={product.name} 
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-            onError={() => setImageError(true)}
+            onError={handleImageError}
           />
           <button 
             onClick={(e) => {
@@ -58,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {formatPrice(product.price)}
           </p>
           <Button 
-            onClick={() => addToCart(product)}
+            onClick={handleAddToCart}
             size="sm"
             className="bg-tulsi hover:bg-tulsi/90"
           >
